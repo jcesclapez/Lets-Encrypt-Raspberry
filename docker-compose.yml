@@ -1,4 +1,4 @@
-version: '3.1'
+version: '2.1'
 
 services:
 
@@ -43,7 +43,15 @@ services:
       - /home/pi/web/certs:/etc/nginx/certs:ro
       - /etc/nginx/vhost.d
       - /usr/share/nginx/html
-
+ 
+  lets-encrypt:
+    image: alexanderkrause/rpi-letsencrypt-nginx-proxy-companion
+    volumes:
+      - /Users/jcesclapez/Downloads/docker/certs:/etc/nginx/certs:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    volumes_from:
+      - nginx-proxy
+      
 volumes:
 
  web_db:
