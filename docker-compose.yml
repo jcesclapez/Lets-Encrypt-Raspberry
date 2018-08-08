@@ -1,0 +1,52 @@
+version: '3.1'
+
+services:
+
+  wordpress:
+    image: wordpress
+    restart: always
+    volumes:
+      - web:/var/www/html
+    networks:
+      - frontend
+      - backend
+    environment:
+      WORDPRESS_DB_PASSWORD: docker-secret
+      VIRTUAL_HOST: yourdomain.com
+      LETSENCRYPT_HOST: yourdomain.com
+      LETSENCRYPT_EMAIL: your@mail.com
+
+  mysql:
+    image: hypriot/rpi-mysql
+    restart: always
+    volumes:
+      - web_db:/var/lib/mysql
+    networks:
+      - backend
+    environment:
+      MYSQL_ROOT_PASSWORD: r120689
+
+  nginx-proxy:
+    image: alexanderkrause/rpi-nginx-proxy
+    labels:
+      - com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - frontend
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - /home/pi/web/certs:/etc/nginx/certs:ro
+      - /etc/nginx/vhost.d
+      - /usr/share/nginx/html
+
+volumes:
+
+ web_db:
+ web:
+
+networks:
+ frontend:
+ backend:
+
